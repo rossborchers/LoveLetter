@@ -50,7 +50,7 @@
 
 			sampler2D _BackgroundTexture;
 
-			#define AMPLITUDE 0.1
+			#define AMPLITUDE 0.01
 			#define SPEED 5.0
 			#define PI 3.14159
 
@@ -105,7 +105,7 @@
 				float discretized_t = float(int(_t * 20)) / 20;
 
 				bool offset = hash21(float2(discretized_t, discretized)) > 0.5;
-				float offset_amount = offset ? hash11(discretized) : 0;
+				float offset_amount = offset ? hash11(discretized) / 50 : 0;
 					
 				float4 shift = vec4pow(hash21(float2(SPEED * _t, 2.0 * SPEED * _t / 25.0)), 8.0)
 					* float4(float3(AMPLITUDE, AMPLITUDE, AMPLITUDE) * hash33(float3(_t, _t * 2, _t / 2)), (hash11(_t) - 0.5) * AMPLITUDE);

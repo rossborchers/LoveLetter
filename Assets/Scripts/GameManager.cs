@@ -11,9 +11,15 @@ public class GameManager : MonoBehaviour
 
     public List<string> Raw;
     public List<string> Sensored;
+    public List<GameObject> GlitchObjects;
 
     private void Start()
     {
+        foreach (GameObject obj in GlitchObjects)
+        {
+            obj.SetActive(false);
+        }
+
         if (Input)
         {
             Input.onValidateInput += ValidateInput;
@@ -84,6 +90,8 @@ public class GameManager : MonoBehaviour
                 Placeholder.text = Placeholder.text.Replace(raw, sensored);
 
                 Input.caretPosition += index + sensored.Length;
+
+                GlitchObjects[i].SetActive(true);
             }
         }
     }
