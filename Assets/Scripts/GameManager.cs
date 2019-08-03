@@ -1,75 +1,98 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public ContentMaker ContentMaker;
-    public ContentLog ContentLog;
+    public List<AudioSource> Sources = new List<AudioSource>();
 
-    public List<ContentPiece> Content;
+    public TMP_Text Placeholder;
+    public TMP_InputField Input;
 
-    public int ContentIndex = 0;
-
-    public enum Sender
-    {
-        Player,
-        Bot
-    }
-
-    [Serializable]
-    public class ContentPiece
-    {
-        public Sender Sender;
-        public string Expected;
-        public string Actual;
-
-        public ContentPiece(ContentPiece rhs)
-        {
-            this.Sender = rhs.Sender;
-            this.Expected = rhs.Expected;
-            this.Actual = rhs.Actual;
-        }
-    }
+    public List<string> Raw;
+    public List<string> Sensored;
+    public List<GameObject> GlitchObjects;
 
     private void Start()
     {
-        StartCoroutine(Game());
-    }
-
-    private IEnumerator Game()
-    {
-        int currentIndex = 0;
-        int lastIndex = 0;
-        while(currentIndex < Content.Count)
+        foreach (GameObject obj in GlitchObjects)
         {
-            if(lastIndex < currentIndex)
+            obj.SetActive(false);
+        }
+
+        if (Input)
+        {
+            Input.onValidateInput += ValidateInput;
+        }
+
+        List<char> newText = new List<char>() ;
+        foreach( char c in Placeholder.text)
+        {
+            if (c == 13)
             {
-                ContentPiece currentPiece = Content[ContentIndex];
-
-                ContentPiece modifiedPiece = null;
-                if (currentPiece.Sender == Sender.Player)
-                {
-                    ContentMaker.DoContent(currentPiece);
-                    while(ContentMaker.BusyWithContent())
-                    {
-                        ContentMaker.UpdateContent();
-                        yield return null;
-                    }
-                    modifiedPiece = ContentMaker.GetModifiedContent();
-                }
-                ContentLog.Add(modifiedPiece);
-
-                currentIndex++;
-                lastIndex = currentIndex;
+                continue;
             }
             else
             {
-                yield return null;
+                newText.Add(c);
+            }
+        }
+        string t = new string(newText.ToArray());
+        Placeholder.text = t;
+    }
+
+    private char ValidateInput(string text, int charIndex, char addedChar)
+    {
+      
+        char invalid = '\0';
+
+        if (charIndex > Placeholder.text.Length - 1)
+        {
+            return invalid;
+        }
+
+        if (Placeholder.text[charIndex] == 10 || Placeholder.text[charIndex] == 13)
+        {
+            if(addedChar == 10 || addedChar == 13)
+            {
+                PlayValid();
+                return addedChar;             
             }
         }
 
-        //TODO: 
+        if (Placeholder.text[charIndex] == addedChar)
+        {
+            PlayValid();
+            return addedChar;
+        }
+        else
+        {
+            return invalid;
+        }
+    }
+
+    private void PlayValid()
+    {
+        Sources[Random.Range(0, Sources.Count)].Play();
+    }
+
+    private void Update()
+    {
+        for(int i  = 0; i < Sensored.Count && i < Raw.Count; i++)
+        {
+            string raw = Raw[i];
+            string sensored = Sensored[i];
+
+            if (Input.text.Contains(raw))
+            {
+                int index = Input.text.IndexOf(raw);
+                Input.text = Input.text.Replace(raw, sensored);
+                Placeholder.text = Placeholder.text.Replace(raw, sensored);
+
+                Input.caretPosition += index + sensored.Length;
+
+                GlitchObjects[i].SetActive(true);
+            }
+        }
     }
 }
