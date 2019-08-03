@@ -37,32 +37,37 @@ public class GameManager : MonoBehaviour
 
     private char ValidateInput(string text, int charIndex, char addedChar)
     {
-        Sources[Random.Range(0, Sources.Count)].Play();
-
-        Debug.Log((0 + Placeholder.text[charIndex]) + " " + (0 + addedChar));
+      
         char invalid = '\0';
-
-        if (Placeholder.text[charIndex] == 10 || Placeholder.text[charIndex] == 13)
-        {
-            if(addedChar == 10 || addedChar == 13)
-            {
-                return addedChar;
-            }
-        }
 
         if (charIndex > Placeholder.text.Length - 1)
         {
             return invalid;
         }
 
+        if (Placeholder.text[charIndex] == 10 || Placeholder.text[charIndex] == 13)
+        {
+            if(addedChar == 10 || addedChar == 13)
+            {
+                PlayValid();
+                return addedChar;             
+            }
+        }
+
         if (Placeholder.text[charIndex] == addedChar)
         {
+            PlayValid();
             return addedChar;
         }
         else
         {
             return invalid;
         }
+    }
+
+    private void PlayValid()
+    {
+        Sources[Random.Range(0, Sources.Count)].Play();
     }
 
     private void Update()
@@ -74,11 +79,11 @@ public class GameManager : MonoBehaviour
 
             if (Input.text.Contains(raw))
             {
-                //int index =Input.text.index(raw);
+                int index = Input.text.IndexOf(raw);
                 Input.text = Input.text.Replace(raw, sensored);
                 Placeholder.text = Placeholder.text.Replace(raw, sensored);
 
-                Input.caretPosition += sensored.Length - raw.Length;
+                Input.caretPosition += index + sensored.Length;
             }
         }
     }
