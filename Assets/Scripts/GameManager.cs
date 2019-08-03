@@ -11,13 +11,16 @@ public class GameManager : MonoBehaviour
 
     public List<string> Raw;
     public List<string> Sensored;
-    public List<GameObject> GlitchObjects;
+    public List<List<GameObject>> GlitchObjects;
 
     private void Start()
     {
-        foreach (GameObject obj in GlitchObjects)
+        foreach (List<GameObject> obj in GlitchObjects)
         {
-            obj.SetActive(false);
+            foreach (GameObject o in obj)
+            {
+                o.SetActive(false);
+            }
         }
 
         if (Input)
@@ -91,7 +94,14 @@ public class GameManager : MonoBehaviour
 
                 Input.caretPosition += index + sensored.Length;
 
-                GlitchObjects[i].SetActive(true);
+                if(GlitchObjects.Count < i)
+                {
+                    foreach (GameObject o in GlitchObjects[i])
+                    {
+                        o.SetActive(true);
+                    }
+                }
+              
             }
         }
     }
