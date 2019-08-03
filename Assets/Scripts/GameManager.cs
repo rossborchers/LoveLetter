@@ -1,75 +1,45 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public ContentMaker ContentMaker;
-    public ContentLog ContentLog;
 
-    public List<ContentPiece> Content;
-
-    public int ContentIndex = 0;
-
-    public enum Sender
-    {
-        Player,
-        Bot
-    }
-
-    [Serializable]
-    public class ContentPiece
-    {
-        public Sender Sender;
-        public string Expected;
-        public string Actual;
-
-        public ContentPiece(ContentPiece rhs)
-        {
-            this.Sender = rhs.Sender;
-            this.Expected = rhs.Expected;
-            this.Actual = rhs.Actual;
-        }
-    }
+    public TMP_Text Placeholder;
+    public TMP_InputField Input;
 
     private void Start()
     {
-        StartCoroutine(Game());
+        if (Input)
+        {
+            Input.onValidateInput += ValidateInput;
+        }
     }
 
-    private IEnumerator Game()
+    private char ValidateInput(string text, int charIndex, char addedChar)
     {
-        int currentIndex = 0;
-        int lastIndex = 0;
-        while(currentIndex < Content.Count)
+        Debug.Log((0 + Placeholder.text[charIndex]) + " " + (0 + addedChar));
+        char invalid = '\0';
+
+        if (Placeholder.text[charIndex] == 10 || Placeholder.text[charIndex] == 13)
         {
-            if(lastIndex < currentIndex)
+            if(addedChar == 10 || addedChar == 13)
             {
-                ContentPiece currentPiece = Content[ContentIndex];
-
-                ContentPiece modifiedPiece = null;
-                if (currentPiece.Sender == Sender.Player)
-                {
-                    ContentMaker.DoContent(currentPiece);
-                    while(ContentMaker.BusyWithContent())
-                    {
-                        ContentMaker.UpdateContent();
-                        yield return null;
-                    }
-                    modifiedPiece = ContentMaker.GetModifiedContent();
-                }
-                ContentLog.Add(modifiedPiece);
-
-                currentIndex++;
-                lastIndex = currentIndex;
-            }
-            else
-            {
-                yield return null;
+                return addedChar;
             }
         }
 
-        //TODO: 
+        if (charIndex > Placeholder.text.Length - 1)
+        {
+            return invalid;
+        }
+
+        if (Placeholder.text[charIndex] == addedChar)
+        {
+            return addedChar;
+        }
+        else
+        {
+            return invalid;
+        }
     }
 }
