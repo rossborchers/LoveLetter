@@ -91,14 +91,11 @@ public class GameManager : MonoBehaviour
 
                 Input.caretPosition += index + sensored.Length;
 
-                if(GlitchObjects.Count < i)
+                //if(GlitchObjects.Count < i)
                 {
-                    foreach (GameObject o in GlitchObjects)
-                    {
-                        o.SetActive(true);
-                    }
+                    GlitchObjects[i].SetActive(true);
                 }
-              
+               
             }
         }
     }
