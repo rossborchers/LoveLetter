@@ -11,16 +11,13 @@ public class GameManager : MonoBehaviour
 
     public List<string> Raw;
     public List<string> Sensored;
-    public List<List<GameObject>> GlitchObjects;
+    public List<GameObject> GlitchObjects;
 
     private void Start()
     {
-        foreach (List<GameObject> obj in GlitchObjects)
+        foreach (GameObject o in GlitchObjects)
         {
-            foreach (GameObject o in obj)
-            {
-                o.SetActive(false);
-            }
+            o.SetActive(false);
         }
 
         if (Input)
@@ -96,7 +93,7 @@ public class GameManager : MonoBehaviour
 
                 if(GlitchObjects.Count < i)
                 {
-                    foreach (GameObject o in GlitchObjects[i])
+                    foreach (GameObject o in GlitchObjects)
                     {
                         o.SetActive(true);
                     }
