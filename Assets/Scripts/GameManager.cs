@@ -95,7 +95,7 @@ public class GameManager : MonoBehaviour
                 {
                     GlitchObjects[i].SetActive(true);
                 }
-               
+                
             }
         }
     }
